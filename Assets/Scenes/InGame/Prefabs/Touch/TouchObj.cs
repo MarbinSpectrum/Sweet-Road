@@ -41,6 +41,7 @@ public class TouchObj : MonoBehaviour
             return;
         }
         touchManager.MouseDown(posX, posY);
+        Debug.Log(posX + "," + posY);
     }
 
     ////////////////////////////////////////////////////////////////////////////////

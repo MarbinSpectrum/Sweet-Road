@@ -5251,6 +5251,7 @@ MonoBehaviour:
   - {fileID: 690712196}
   - {fileID: 2038534323}
   - {fileID: 149477115}
+  blockPrefab: {fileID: 6304375428249589384, guid: fdd18c4ac871297468b8b9e148c49114, type: 3}
 --- !u!1001 &679809123
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13048,7 +13049,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  stageData: {fileID: 4900000, guid: c11cd5cc1cb266d4793eefa744b288b5, type: 3}
+  stageData: {fileID: 4900000, guid: 9f9b426bb10d48543ab25dd936095ad7, type: 3}
   centerPos: {x: -2.22, y: -3.87}
   blockWidth: 1.47
   blockHeight: 0.85
@@ -13075,7 +13076,9 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  MoveTime: 0.5
+  boardLock: 0
+  MoveTime: 0.25
+  MatchDelay: 0.05
 --- !u!1001 &1854354242
 PrefabInstance:
   m_ObjectHideFlags: 0

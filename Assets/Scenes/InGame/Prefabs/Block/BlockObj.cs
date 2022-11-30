@@ -20,7 +20,7 @@ public class BlockObj : SerializedMonoBehaviour
     ////////////////////////////////////////////////////////////////////////////////
     /// : 블록객체 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public void InitBlock(LevelEditor.BlockType pEBlockType)
+    public void InitBlock(LevelEditor.BlockType pEBlockType, bool pAniRun = true)
     {
         string str = pEBlockType.ToString();
         BlockType blockType;
@@ -30,11 +30,34 @@ public class BlockObj : SerializedMonoBehaviour
             InitBlock(blockType);
         }
     }
-    public void InitBlock(BlockType pBlockType)
+    public void InitBlock(BlockType pBlockType, bool pAniRun = true)
     {
         blockType = pBlockType;
-        blockRenderer.sprite = blockSprite[blockType];
-        blockAnimation.Play();
+        if (blockRenderer != null)
+        {
+            blockRenderer.gameObject.SetActive(true);
+            blockRenderer.sprite = blockSprite[blockType];
+        }
+        if(pAniRun == true)
+        {
+            blockAnimation.Play();
+        }
+    }
+
+    public void InitBlock(bool pAniRun = true)
+    {
+        BlockType blockType =
+            (BlockType)UnityEngine.Random.Range(0, 6);
+        InitBlock(blockType, pAniRun);
+    }
+
+    public void DisableBlock()
+    {
+        if (blockRenderer != null)
+        {
+            //타일 비활성화
+            blockRenderer.gameObject.SetActive(false);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////
