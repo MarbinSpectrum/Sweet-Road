@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using System.IO;
 using System.Text;
 
 namespace MyLib
 {
-    public class Exception
+    public static class Exception
     {
         #region[배열 범위초과 검사]
         public static bool IndexOutRange<T>(int x, int y, T[,] array)
@@ -38,7 +38,7 @@ namespace MyLib
         #endregion
     }
 
-    public class AreaCheck
+    public static class AreaCheck
     {
         #region[범위 내부인지 검사]
         public static bool RectIn(Vector2 pos,Rect rect)
@@ -55,7 +55,7 @@ namespace MyLib
         #endregion
     }
 
-    public class Algorithm
+    public static class Algorithm
     {
         #region[Next_Permutation]
         public static bool Next_Permutation<T>(List<T> list) where T : IComparable
@@ -170,7 +170,7 @@ namespace MyLib
         #endregion
     }
 
-    public class Calculator
+    public static class Calculator
     {
         #region[CreateRandomList]
 
@@ -188,7 +188,7 @@ namespace MyLib
 
     }
 
-    public class Json
+    public static class Json
     {
         #region[JSON 유틸]
         public static string ObjectToJson(object obj)
@@ -263,6 +263,30 @@ namespace MyLib
             {
                 this.target = target;
             }
+        }
+        #endregion
+    }
+
+    public static class Action2D
+    {
+        #region[MoveTo]
+        public static IEnumerator MoveTo(Transform target, Vector3 to, float duration)
+        {
+            Vector2 from = target.position;
+
+            float elapsed = 0.0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.smoothDeltaTime;
+                target.position =
+                    Vector2.Lerp(from, to, elapsed / duration);
+
+                yield return null;
+            }
+
+            target.position = to;
+
+            yield break;
         }
         #endregion
     }

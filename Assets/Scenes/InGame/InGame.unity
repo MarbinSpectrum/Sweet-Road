@@ -13002,6 +13002,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1844161383}
   - component: {fileID: 1844161384}
+  - component: {fileID: 1844161385}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -13053,6 +13054,28 @@ MonoBehaviour:
   blockHeight: 0.85
   mapWidth: 3
   mapHeight: 23
+--- !u!114 &1844161385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1844161382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9db6fe79321639c4ca495caf3cda4985, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  MoveTime: 0.5
 --- !u!1001 &1854354242
 PrefabInstance:
   m_ObjectHideFlags: 0

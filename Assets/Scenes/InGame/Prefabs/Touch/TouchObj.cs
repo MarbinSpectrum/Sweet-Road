@@ -20,10 +20,21 @@ public class TouchObj : MonoBehaviour
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    /// : OnMouseEnter
+    /// : OnMouseDown
     ////////////////////////////////////////////////////////////////////////////////
-    public void OnMouseEnter()
+    public void OnMouseDown()
     {
+        BoardManager boardManager = BoardManager.instance;
+        if (boardManager == null)
+        {
+            return;
+        }
+        if(boardManager.boardLock)
+        {
+            //현재 보드를 건드릴수 없다.
+            return;
+        }
+
         TouchManager touchManager = TouchManager.instance;
         if(touchManager == null)
         {
@@ -33,15 +44,50 @@ public class TouchObj : MonoBehaviour
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    /// : OnMouseDown
+    /// : OnMouseUp
     ////////////////////////////////////////////////////////////////////////////////
-    public void OnMouseDown()
+    public void OnMouseUp()
     {
+        BoardManager boardManager = BoardManager.instance;
+        if (boardManager == null)
+        {
+            return;
+        }
+        if (boardManager.boardLock)
+        {
+            //현재 보드를 건드릴수 없다.
+            return;
+        }
+
         TouchManager touchManager = TouchManager.instance;
         if (touchManager == null)
         {
             return;
         }
-        touchManager.MouseUp(posX, posY);
+        touchManager.MouseUp();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : OnMouseEnter
+    ////////////////////////////////////////////////////////////////////////////////
+    public void OnMouseEnter()
+    {
+        BoardManager boardManager = BoardManager.instance;
+        if (boardManager == null)
+        {
+            return;
+        }
+        if (boardManager.boardLock)
+        {
+            //현재 보드를 건드릴수 없다.
+            return;
+        }
+
+        TouchManager touchManager = TouchManager.instance;
+        if (touchManager == null)
+        {
+            return;
+        }
+        touchManager.MouseEnter(posX, posY);
     }
 }

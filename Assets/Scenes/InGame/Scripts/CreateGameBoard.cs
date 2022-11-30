@@ -11,7 +11,7 @@ public class CreateGameBoard : FieldObjectSingleton<CreateGameBoard>
     [SerializeField] private TextAsset stageData;
     [SerializeField] private Vector2 centerPos;
 
-    //블록의 크기 및 맵의 크기
+    //블록의 크기 및 맵의 크기를 설정할때 사용됩니다.
     [SerializeField] private float blockWidth;
     [SerializeField] private float blockHeight;
     [SerializeField] private int mapWidth;
@@ -43,16 +43,17 @@ public class CreateGameBoard : FieldObjectSingleton<CreateGameBoard>
         //타일생성
         List<LevelEditor.SaveBlockData> eblockDatas = levelData.blockDatas;
 
+        BoardManager boardManager = BoardManager.instance;
+        boardManager.InitBoardData(blockWidth, blockHeight, 
+            mapWidth, mapHeight, centerPos);
+
         TileGroup tileGroup = TileGroup.instance;
-        tileGroup.InitTileMap(eblockDatas, centerPos, 
-            blockWidth, blockHeight, mapWidth, mapHeight);
+        tileGroup.InitTileMap(eblockDatas);
 
         BlockGroup blockGroup = BlockGroup.instance;
-        blockGroup.InitBlockMap(eblockDatas, centerPos,
-            blockWidth, blockHeight, mapWidth, mapHeight);
+        blockGroup.InitBlockMap(eblockDatas);
 
         TouchManager touchManager = TouchManager.instance;
-        touchManager.InitTouchMap(eblockDatas, centerPos,
-        blockWidth, blockHeight, mapWidth, mapHeight);
+        touchManager.InitTouchMap(eblockDatas);
     }
 }

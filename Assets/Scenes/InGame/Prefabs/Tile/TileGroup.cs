@@ -13,10 +13,25 @@ public class TileGroup : FieldObjectSingleton<TileGroup>
     ////////////////////////////////////////////////////////////////////////////////
     /// : 타일맵 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public bool InitTileMap(List<LevelEditor.SaveBlockData> pEBlockDatas, Vector2 pCenterPos,
-        float pBlockWidth, float pBlockHeight,int pMapWidth,int pMapHeight)
+    public bool InitTileMap(List<LevelEditor.SaveBlockData> pEBlockDatas)
     {
-        isTile = new bool[pMapWidth + 1, pMapHeight];
+        //보드 데이터를 받아온다.
+        float blockWidth = 0;
+        float blockHeight = 0;
+        int mapWidth = 0;
+        int mapHeight = 0;
+        Vector2 centerPos = Vector2.zero;
+        BoardManager boardManager = BoardManager.instance;
+        if (boardManager != null)
+        {
+            blockWidth = boardManager.blockWidth;
+            blockHeight = boardManager.blockHeight;
+            mapWidth = boardManager.mapWidth;
+            mapHeight = boardManager.mapHeight;
+            centerPos = boardManager.centerPos;
+        }
+
+        isTile = new bool[mapWidth + 1, mapHeight + 1];
         int sortOrder = 0;
 
         for (int idx = 0; idx < tiles.Count; idx++)
@@ -45,8 +60,8 @@ public class TileGroup : FieldObjectSingleton<TileGroup>
             int blockX = pEBlockDatas[idx].pos.x;
             int blockY = pEBlockDatas[idx].pos.y;
             Vector2 tilePos = MyLib.Calculator.CalculateHexagonPos
-                (pBlockWidth, pBlockHeight, blockX, blockY);
-            tilePos += pCenterPos;
+                (blockWidth, blockHeight, blockX, blockY);
+            tilePos += centerPos;
 
             Transform tileTrans = tiles[idx].transform;
             tileTrans.position = tilePos;

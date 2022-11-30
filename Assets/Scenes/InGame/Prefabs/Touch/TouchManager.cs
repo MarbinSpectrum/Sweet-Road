@@ -9,13 +9,26 @@ public class TouchManager : FieldObjectSingleton<TouchManager>
 {
     [SerializeField] private List<TouchObj> touchs = new List<TouchObj>();
     private Vector2Int mouseDownPos;
+    private Vector2Int mouseEnterPos;
+    private Vector2Int mouseUpPos;
 
     ////////////////////////////////////////////////////////////////////////////////
     /// : 터치맵 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public bool InitTouchMap(List<LevelEditor.SaveBlockData> pEBlockDatas, Vector2 pCenterPos,
-        float pBlockWidth, float pBlockHeight, int pMapWidth, int pMapHeight)
+    public bool InitTouchMap(List<LevelEditor.SaveBlockData> pEBlockDatas)
     {
+        //보드 데이터를 받아온다.
+        float blockWidth = 0;
+        float blockHeight = 0;
+        Vector2 centerPos = Vector2.zero;
+        BoardManager boardManager = BoardManager.instance;
+        if(boardManager != null)
+        {
+            blockWidth = boardManager.blockWidth;
+            blockHeight = boardManager.blockHeight;
+            centerPos = boardManager.centerPos;
+        }
+
         for (int idx = 0; idx < touchs.Count; idx++)
         {
             if (touchs[idx] == null)
@@ -43,8 +56,8 @@ public class TouchManager : FieldObjectSingleton<TouchManager>
             int blockX = pEBlockDatas[idx].pos.x;
             int blockY = pEBlockDatas[idx].pos.y;
             Vector2 tilePos = MyLib.Calculator.CalculateHexagonPos
-                (pBlockWidth, pBlockHeight, blockX, blockY);
-            tilePos += pCenterPos;
+                (blockWidth, blockHeight, blockX, blockY);
+            tilePos += centerPos;
 
             Transform tileTrans = touchs[idx].transform;
             tileTrans.position = tilePos;
@@ -61,8 +74,19 @@ public class TouchManager : FieldObjectSingleton<TouchManager>
         mouseDownPos.Set(pX, pY);
     }
 
-    public void MouseUp(int pX, int pY)
+    public void MouseEnter(int pX, int pY)
     {
-        
+        mouseEnterPos.Set(pX, pY);
+    }
+
+    public void MouseUp()
+    {
+        BoardManager boardManager = BoardManager.instance;
+        if(boardManager == null)
+        {
+            return;
+        }
+        mouseUpPos.Set(mouseEnterPos.x, mouseEnterPos.y);
+        boardManager.SwapBlock(mouseDownPos, mouseUpPos);
     }
 }

@@ -36,6 +36,47 @@ public class BlockObj : SerializedMonoBehaviour
         blockRenderer.sprite = blockSprite[blockType];
         blockAnimation.Play();
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 위치교환이 가능한지 검사
+    ////////////////////////////////////////////////////////////////////////////////
+    public bool CanSwap()
+    {
+        switch(blockType)
+        {
+            case BlockType.red:
+            case BlockType.orange:
+            case BlockType.yellow:
+            case BlockType.green:
+            case BlockType.blue:
+            case BlockType.purple:
+            case BlockType.spin:
+            case BlockType.rocket:
+                return true;
+        }
+        return false;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 매치되서 파괴 되는 타입인가?
+    ////////////////////////////////////////////////////////////////////////////////
+    public bool IsMatchBlock()
+    {
+        switch (blockType)
+        {
+            case BlockType.red:
+            case BlockType.orange:
+            case BlockType.yellow:
+            case BlockType.green:
+            case BlockType.blue:
+            case BlockType.purple:
+            case BlockType.rocket:
+                return true;
+            case BlockType.spin:
+                return false;
+        }
+        return false;
+    }
 }
 
 public enum BlockType
