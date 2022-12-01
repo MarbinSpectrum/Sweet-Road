@@ -9,7 +9,6 @@ public class TouchManager : FieldObjectSingleton<TouchManager>
 {
     [SerializeField] private List<TouchObj> touchs = new List<TouchObj>();
     private Vector2Int mouseDownPos;
-    private Vector2Int mouseEnterPos;
     private Vector2Int mouseUpPos;
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -74,19 +73,14 @@ public class TouchManager : FieldObjectSingleton<TouchManager>
         mouseDownPos.Set(pX, pY);
     }
 
-    public void MouseEnter(int pX, int pY)
-    {
-        mouseEnterPos.Set(pX, pY);
-    }
-
-    public void MouseUp()
+    public void MouseUp(int pX, int pY)
     {
         BoardManager boardManager = BoardManager.instance;
         if(boardManager == null)
         {
             return;
         }
-        mouseUpPos.Set(mouseEnterPos.x, mouseEnterPos.y);
+        mouseUpPos.Set(pX, pY);
         boardManager.SwapBlock(mouseDownPos, mouseUpPos);
     }
 }

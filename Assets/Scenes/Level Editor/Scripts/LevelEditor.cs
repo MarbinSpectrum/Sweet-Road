@@ -13,14 +13,24 @@ namespace LevelEditor
     [ExecuteInEditMode]
     public class LevelEditor : SerializedMonoBehaviour
     {
-        [SerializeField] private List<EditorBlock> blocks 
-            = new List<EditorBlock>();
+        //블록 이동 제한 횟수
+        [SerializeField] private int moveCnt;
 
+        //목표 블록
+        [SerializeField] private Dictionary<BlockType, int> targetBlocks =
+            new Dictionary<BlockType, int>();
+
+        [Space]
         //블록의 크기 및 맵의 크기
         [SerializeField] private float blockWidth = 10;
         [SerializeField] private float blockHeight = 10;
         [SerializeField] private int mapWidth = 10;
         [SerializeField] private int mapHeight = 10;
+
+
+        [SerializeField] private List<EditorBlock> blocks 
+            = new List<EditorBlock>();
+
 
         ////////////////////////////////////////////////////////////////////////////////
         /// : Update
@@ -87,7 +97,7 @@ namespace LevelEditor
         [Button("Export Data", ButtonSizes.Large)] 
         public void ExportData()
         {
-            LevelData levelData = new LevelData(blocks);
+            LevelData levelData = new LevelData(blocks,targetBlocks, moveCnt);
             string jsonData = Json.ObjectToJson(levelData);
             var jtc2 = Json.JsonToOject<LevelData>(jsonData);
             Json.CreateJsonFile(Application.dataPath, "Resources/LevelData", jsonData);

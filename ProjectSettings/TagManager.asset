@@ -44,6 +44,6 @@ TagManager:
   - name: Tile
     uniqueID: 2386041335
     locked: 0
-  - name: Jam
+  - name: Block
     uniqueID: 3221941361
     locked: 0

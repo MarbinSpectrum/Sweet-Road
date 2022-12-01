@@ -70,15 +70,6 @@ public class BoardManager : FieldObjectSingleton<BoardManager>
     }
     #endregion
 
-    //주변 블록의 블록위치
-    #region[aroundPos]
-    private int[][,] aroundPos = new int[][,]
-    {
-        new int[,]{{0, 2}, {+1, +1}, {1, -1}, {0, -2}, { +0, -1}, {+0, +1}},
-        new int[,]{{0, 2}, {+0, +1}, {0, -1}, {0, -2}, { -1, -1}, {-1, +1}},
-    };
-    #endregion
-
     public void InitBoardData(float pBlockWidth, float pBlockHeight, 
         int pMapWidth, int pMapHeight, Vector2 pCenterPos)
     {
@@ -140,11 +131,12 @@ public class BoardManager : FieldObjectSingleton<BoardManager>
     private bool IsAroundBlock(Vector2Int pPos0, Vector2Int pPos1)
     {
         int by = pPos0.y % 2; //y좌표에 따라서 주변 블록의 위치가 다르다.
-        int len = aroundPos[by].GetLength(0);
-        for (int idx = 0; idx < len; idx++)
+
+        List<Vector2Int> aroundPos = MyLib.Calculator.GetAroundHexagonPos(pPos0.x, pPos0.y);
+        for (int idx = 0; idx < aroundPos.Count; idx++)
         {
-            int pX = pPos0.x + aroundPos[by][idx, 0];
-            int pY = pPos0.y + aroundPos[by][idx, 1];
+            int pX = aroundPos[idx].x;
+            int pY = aroundPos[idx].y;
             if (pPos1.x == pX && pPos1.y == pY)
                 return true;
         }

@@ -40,20 +40,29 @@ public class CreateGameBoard : FieldObjectSingleton<CreateGameBoard>
             = MyLib.Json.JsonToOject<LevelEditor.LevelData>(stageData.text);
 
 
-        //타일생성
-        List<LevelEditor.SaveBlockData> eblockDatas = levelData.blockDatas;
+        List<LevelEditor.SaveBlockData> eBlockDatas = levelData.blockDatas;
+        List<LevelEditor.SaveTargetData> eTargetDatas = levelData.targetDatas;
+        int eMoveCnt = levelData.moveCnt;
 
+        //보드초기화
         BoardManager boardManager = BoardManager.instance;
         boardManager.InitBoardData(blockWidth, blockHeight, 
             mapWidth, mapHeight, centerPos);
 
+        //타일초기화
         TileGroup tileGroup = TileGroup.instance;
-        tileGroup.InitTileMap(eblockDatas);
+        tileGroup.InitTileMap(eBlockDatas);
 
+        //블록초기화
         BlockGroup blockGroup = BlockGroup.instance;
-        blockGroup.InitBlockMap(eblockDatas);
+        blockGroup.InitBlockMap(eBlockDatas);
 
+        //터치판정초기화
         TouchManager touchManager = TouchManager.instance;
-        touchManager.InitTouchMap(eblockDatas);
+        touchManager.InitTouchMap(eBlockDatas);
+
+        //UI 초기화
+        InGameUI inGameUI = InGameUI.instance;
+        inGameUI.InitGameUI(eMoveCnt, eTargetDatas);
     }
 }

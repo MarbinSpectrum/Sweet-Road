@@ -172,7 +172,7 @@ namespace MyLib
 
     public static class Calculator
     {
-        #region[CreateRandomList]
+        #region[CalculateHexagonPos]
 
         //블록의 크기를 고려해서 x,y에 해당하는 블록의 위치를 구한다.
         public static Vector2 CalculateHexagonPos(float blockWidth, float blockHeight, int x, int y)
@@ -186,6 +186,56 @@ namespace MyLib
         }
         #endregion
 
+        #region[GetAroundHexagonPos]
+        private static int[][,] hexagonAroundPos = new int[][,]
+        {
+            new int[,]{{0, 2}, {+1, +1}, {1, -1}, {0, -2}, { +0, -1}, {+0, +1}},
+            new int[,]{{0, 2}, {+0, +1}, {0, -1}, {0, -2}, { -1, -1}, {-1, +1}},
+        };
+
+        //x,y주변의 블럭을 구해준다.
+        public static List<Vector2Int> GetAroundHexagonPos(int pX, int pY)
+        {
+            int by = pY % 2; //y좌표에 따라서 주변 블록의 위치가 다르다.
+            List<Vector2Int> aroundList = new List<Vector2Int>();
+            for (int idx = 0; idx < 6; idx++)
+            {
+                int newX = pX + hexagonAroundPos[by][idx, 0];
+                int newY = pY + hexagonAroundPos[by][idx, 1];
+                aroundList.Add(new Vector2Int(newX, newY));
+            }
+            return aroundList;
+        }
+        #endregion
+
+        #region[GetDicHeHexagonPos]
+        public static Vector2Int GetDicHeHexagonPos(int pX, int pY,float pAngle)
+        {
+            int by = pY % 2; //y좌표에 따라서 주변 블록의 위치가 다르다.
+            float angleR = 120;
+            float angleL = 60;
+            for (int idx = 0; idx < 6; idx++)
+            {
+                float minV = Mathf.Min(angleL, angleR);
+                float maxV = Mathf.Max (angleL, angleR);
+                if (minV <= pAngle && pAngle <= maxV)
+                {
+                    int newX = pX + hexagonAroundPos[by][idx, 0];
+                    int newY = pY + hexagonAroundPos[by][idx, 1];
+                    return new Vector2Int(newX, newY);
+                }
+                angleL -= 60;
+                angleR -= 60;
+                if(angleL < 0 || angleR < 0)
+                {
+                    angleL += 360;
+                    angleR += 360;
+                }
+            }
+
+            return Vector2Int.one * -1; ;
+        }
+        #endregion
     }
 
     public static class Json

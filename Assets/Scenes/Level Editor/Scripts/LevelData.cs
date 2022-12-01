@@ -20,10 +20,27 @@ namespace LevelEditor
     }
 
     [System.Serializable]
+    public struct SaveTargetData
+    {
+        public int targetNum;
+        public BlockType blockType;
+        public SaveTargetData(BlockType pBlockType, int ptargetNum)
+        {
+            blockType = pBlockType;
+            targetNum = ptargetNum;
+        }
+    }
+
+    [System.Serializable]
     public class LevelData
     {
+        public int moveCnt;
+
         public List<SaveBlockData> blockDatas;
-        public LevelData(List<EditorBlock> pBlocks)
+        public List<SaveTargetData> targetDatas;
+
+        public LevelData(List<EditorBlock> pBlocks,
+            Dictionary<BlockType, int> pTargetBlocks, int pMoveCnt)
         {
             blockDatas = new List<SaveBlockData>();
             foreach (EditorBlock editorBlock in pBlocks)
@@ -32,6 +49,16 @@ namespace LevelEditor
                     new Vector2Int(editorBlock.posX, editorBlock.posY),
                     editorBlock.blockType));
             }
+
+            targetDatas = new List<SaveTargetData>();
+            foreach (KeyValuePair<BlockType, int> pTargetBlockPair in pTargetBlocks)
+            {
+                BlockType blockType = pTargetBlockPair.Key;
+                int cnt = pTargetBlockPair.Value;
+                targetDatas.Add(new SaveTargetData(blockType, cnt));
+            }
+
+            moveCnt = pMoveCnt;
         }
     }
 }

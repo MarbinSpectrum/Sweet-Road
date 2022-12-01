@@ -84,6 +84,7 @@ namespace LevelEditor
 
         //±‚≈∏
         none,
-        empty
+        empty,
+        spawn,
     }
 }

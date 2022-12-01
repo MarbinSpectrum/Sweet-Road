@@ -9,6 +9,7 @@ public class TouchObj : MonoBehaviour
 {
     private int posX;
     private int posY;
+    private Vector3 swipeVector;
 
     ////////////////////////////////////////////////////////////////////////////////
     /// : 터치객체 초기화
@@ -40,6 +41,8 @@ public class TouchObj : MonoBehaviour
         {
             return;
         }
+        swipeVector = Input.mousePosition;
+
         touchManager.MouseDown(posX, posY);
         Debug.Log(posX + "," + posY);
     }
@@ -65,30 +68,17 @@ public class TouchObj : MonoBehaviour
         {
             return;
         }
-        touchManager.MouseUp();
-    }
+        swipeVector = Input.mousePosition - swipeVector;
+        Vector2 v = swipeVector.normalized;
+        float angle = Mathf.Atan2(v.y, v.x);
+        if (angle < 0f)
+        {
+            angle = Mathf.PI * 2 + angle;
+        }
+        angle *= Mathf.Rad2Deg;
 
-    ////////////////////////////////////////////////////////////////////////////////
-    /// : OnMouseEnter
-    ////////////////////////////////////////////////////////////////////////////////
-    public void OnMouseEnter()
-    {
-        BoardManager boardManager = BoardManager.instance;
-        if (boardManager == null)
-        {
-            return;
-        }
-        if (boardManager.boardLock)
-        {
-            //현재 보드를 건드릴수 없다.
-            return;
-        }
+        Vector2Int upBlockPos = MyLib.Calculator.GetDicHeHexagonPos(posX, posY, angle);
 
-        TouchManager touchManager = TouchManager.instance;
-        if (touchManager == null)
-        {
-            return;
-        }
-        touchManager.MouseEnter(posX, posY);
+        touchManager.MouseUp(upBlockPos.x, upBlockPos.y);
     }
 }
