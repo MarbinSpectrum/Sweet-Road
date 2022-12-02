@@ -14,7 +14,7 @@ public class TouchManager : FieldObjectSingleton<TouchManager>
     ////////////////////////////////////////////////////////////////////////////////
     /// : 터치맵 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public bool InitTouchMap(List<SaveBlockData> pEBlockDatas)
+    public bool InitTouchMap(List<BlockData> pEBlockDatas)
     {
         //보드 데이터를 받아온다.
         float blockWidth = 0;

@@ -691,20 +691,20 @@ MonoBehaviour:
     SerializationNodes:
     - Name: targetBlocks
       Entry: 7
-      Data: 0|System.Collections.Generic.HashSet`1[[SaveTargetData, Assembly-CSharp]],
+      Data: 0|System.Collections.Generic.HashSet`1[[TargetData, Assembly-CSharp]],
         System.Core
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: SaveTargetData, Assembly-CSharp
+      Data: TargetData, Assembly-CSharp
     - Name: targetNum
       Entry: 3
-      Data: 9
+      Data: 0
     - Name: blockType
       Entry: 3
-      Data: 9
+      Data: 0
     - Name: specialType
       Entry: 3
       Data: 0

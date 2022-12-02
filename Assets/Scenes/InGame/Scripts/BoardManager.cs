@@ -29,6 +29,15 @@ public class BoardManager : FieldObjectSingleton<BoardManager>
     }
     #endregion
 
+    //블록이 터지기전 딜레이
+    #region[public float makeBlockDelay]
+    [SerializeField] [MinValue(0)] private float MakeBlockDelay;
+    public float makeBlockDelay
+    {
+        get { return MakeBlockDelay; }
+    }
+    #endregion
+
     //블록의 크기 및 맵의 크기
     #region[public float blockWidth]
     private float BlockWidth;

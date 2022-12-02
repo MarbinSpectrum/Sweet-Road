@@ -7,14 +7,14 @@ using UnityEngine;
 /// : 저장할 블록 데이터
 ////////////////////////////////////////////////////////////////////////////////
 [System.Serializable]
-public struct SaveBlockData
+public struct BlockData
 {
     public Vector2Int pos;
     public BlockType blockType;
     public SpecialType specialType;
     public BlockDic blockDic;
 
-    public SaveBlockData(Vector2Int pPos, BlockType pBlockType,
+    public BlockData(Vector2Int pPos, BlockType pBlockType,
         SpecialType pSpecialType,BlockDic pBlockDic)
     {
         pos = pPos;
@@ -25,13 +25,13 @@ public struct SaveBlockData
 }
 
 [System.Serializable]
-public struct SaveTargetData
+public struct TargetData
 {
     public int targetNum;
     public BlockType blockType;
     public SpecialType specialType;
 
-    public SaveTargetData(BlockType pBlockType, SpecialType pSpecialType, int ptargetNum)
+    public TargetData(BlockType pBlockType, SpecialType pSpecialType, int ptargetNum)
     {
         blockType = pBlockType;
         specialType = pSpecialType;
@@ -44,12 +44,12 @@ public class LevelData
 {
     public int moveCnt;
 
-    public List<SaveBlockData> blockDatas;
-    public List<SaveTargetData> targetDatas;
+    public List<BlockData> blockDatas;
+    public List<TargetData> targetDatas;
 
-    public LevelData(List<EditorBlock> pBlocks, HashSet<SaveTargetData> pTargetBlocks, int pMoveCnt)
+    public LevelData(List<EditorBlock> pBlocks, HashSet<TargetData> pTargetBlocks, int pMoveCnt)
     {
-        blockDatas = new List<SaveBlockData>();
+        blockDatas = new List<BlockData>();
         foreach (EditorBlock editorBlock in pBlocks)
         {
             Vector2Int pos = new Vector2Int(editorBlock.posX, editorBlock.posY);
@@ -57,17 +57,17 @@ public class LevelData
             SpecialType specialType = editorBlock.specialType;
             BlockDic blockDic = editorBlock.blockDic;
 
-            blockDatas.Add(new SaveBlockData(pos, blockType, specialType, blockDic));
+            blockDatas.Add(new BlockData(pos, blockType, specialType, blockDic));
         }
 
-        targetDatas = new List<SaveTargetData>();
-        foreach (SaveTargetData saveTargetData in pTargetBlocks)
+        targetDatas = new List<TargetData>();
+        foreach (TargetData targetData in pTargetBlocks)
         {
-            BlockType blockType = saveTargetData.blockType;
-            SpecialType specialType = saveTargetData.specialType;
-            int cnt = saveTargetData.targetNum;
+            BlockType blockType = targetData.blockType;
+            SpecialType specialType = targetData.specialType;
+            int cnt = targetData.targetNum;
 
-            targetDatas.Add(new SaveTargetData(blockType,specialType, cnt));
+            targetDatas.Add(new TargetData(blockType,specialType, cnt));
         }
 
         moveCnt = pMoveCnt;

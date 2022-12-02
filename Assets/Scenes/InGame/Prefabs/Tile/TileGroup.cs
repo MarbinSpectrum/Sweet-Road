@@ -8,12 +8,12 @@ using UnityEngine;
 public class TileGroup : FieldObjectSingleton<TileGroup>
 {
     [SerializeField] private List<TileObj> tiles = new List<TileObj>();
-    private bool[,] isTile;
+    private TileObj[,] isTile;
 
     ////////////////////////////////////////////////////////////////////////////////
     /// : 타일맵 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public bool InitTileMap(List<SaveBlockData> pEBlockDatas)
+    public bool InitTileMap(List<BlockData> pEBlockDatas)
     {
         //보드 데이터를 받아온다.
         float blockWidth = 0;
@@ -31,7 +31,7 @@ public class TileGroup : FieldObjectSingleton<TileGroup>
             centerPos = boardManager.centerPos;
         }
 
-        isTile = new bool[mapWidth + 1, mapHeight + 1];
+        isTile = new TileObj[mapWidth + 1, mapHeight + 1];
         int sortOrder = 0;
 
         for (int idx = 0; idx < tiles.Count; idx++)
@@ -78,7 +78,7 @@ public class TileGroup : FieldObjectSingleton<TileGroup>
             tiles[idx].InitTile(sortOrder++);
 
             //해당 위치에는 타일이 있다는 것을 표시
-            isTile[blockX, blockY] = true;
+            isTile[blockX, blockY] = tiles[idx];
         }
 
         return true;
@@ -93,6 +93,22 @@ public class TileGroup : FieldObjectSingleton<TileGroup>
         {
             return false;
         }
-        return isTile[pX, pY];
+        return isTile[pX, pY] != null;
+    }
+
+    public void OffTileEffects()
+    {
+        for (int idx = 0; idx < tiles.Count; idx++)
+        {
+            tiles[idx].ActTileEffect(false);
+        }
+    }
+
+    public void RunTileEffect(int pX, int pY)
+    {
+        if(IsTile(pX,pY))
+        {
+            isTile[pX, pY].ActTileEffect(true);
+        }
     }
 }

@@ -19,15 +19,15 @@ public class InGameUI : FieldObjectSingleton<InGameUI>
     ////////////////////////////////////////////////////////////////////////////////
     /// : 인게임 UI를 초기화한다.
     ////////////////////////////////////////////////////////////////////////////////
-    public void InitGameUI(int pMoveCnt, List<SaveTargetData> pETargetDatas)
+    public void InitGameUI(int pMoveCnt, List<TargetData> pETargetDatas)
     {
         //목표블록을 표시해준다.
-        foreach(SaveTargetData saveTargetData in pETargetDatas)
+        foreach(TargetData targetData in pETargetDatas)
         {
             TargetObj newTarget = null;
 
-            BlockType blockType = saveTargetData.blockType;
-            SpecialType specialType = saveTargetData.specialType;
+            BlockType blockType = targetData.blockType;
+            SpecialType specialType = targetData.specialType;
 
             if (newTarget == null)
             {
@@ -39,7 +39,7 @@ public class InGameUI : FieldObjectSingleton<InGameUI>
             newTarget.transform.parent = tObjContext;
             newTarget.transform.localScale = Vector3.one;
 
-            int cnt = saveTargetData.targetNum;
+            int cnt = targetData.targetNum;
 
             newTarget.InitObj(blockType, specialType, cnt);
         }

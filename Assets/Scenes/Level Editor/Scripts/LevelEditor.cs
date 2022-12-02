@@ -17,7 +17,7 @@ public class LevelEditor : SerializedMonoBehaviour
 
     //목표 블록
     [SerializeField]
-    private HashSet<SaveTargetData> targetBlocks = new HashSet<SaveTargetData>();
+    private HashSet<TargetData> targetBlocks = new HashSet<TargetData>();
 
     [Space]
     //블록의 크기 및 맵의 크기

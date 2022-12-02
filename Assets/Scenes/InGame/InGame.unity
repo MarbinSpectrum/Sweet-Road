@@ -8672,7 +8672,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  stageData: {fileID: 4900000, guid: 10842c618bfc17144bc0688470d6db43, type: 3}
+  stageData: {fileID: 4900000, guid: 49037ae5446795c4687fd1c3a876e169, type: 3}
   centerPos: {x: -2.22, y: -3.87}
   blockWidth: 1.47
   blockHeight: 0.85
@@ -8701,7 +8701,8 @@ MonoBehaviour:
     SerializationNodes: []
   boardLock: 0
   MoveTime: 0.1
-  MatchDelay: 0.05
+  MatchDelay: 0.2
+  MakeBlockDelay: 0.5
 --- !u!1001 &1854354242
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -25,6 +25,8 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
     //매치되서 폭발하는 이벤트들
     private Queue<List<MatchEvent>> matchEventQueue = new Queue<List<MatchEvent>>();
 
+    //파괴될 블록
+    private HashSet<Vector2Int> destroyBlock = new HashSet<Vector2Int>();
 
     //블록이 낙하방향
     #region[private int[][,] dropDic]
@@ -37,20 +39,21 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
 
     //일자로 블록이 쌓였는지 검사할 방향이다.
     #region[private int[][][,] matchDic]
+    //방향,짝수위치,위아래
     private int[][][,] matchDic = new int[][][,]
     {
-                //위 아래
-                new int [][,]
-                {
-                    new int[,]{{ 0, 2 }, { 0, -2 } },
-                    new int[,]{{ 0, 2 }, { 0, -2 } },
-                },
-
                 //왼위, 오른아래
                 new int [][,]
                 {
                     new int[,]{{ 0, 1 }, { 1,-1 } },
                     new int[,]{{ -1, 1 }, { 0, -1 } },
+                },
+
+                //위 아래
+                new int [][,]
+                {
+                    new int[,]{{ 0, 2 }, { 0, -2 } },
+                    new int[,]{{ 0, 2 }, { 0, -2 } },
                 },
 
                 //오른위, 왼아래
@@ -69,7 +72,7 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
     {
         new int[][,]
         {
-            new int[,]{{ 0, 2 }, { +1, -1 }, { 1, 3 }},
+            new int[,]{{ 0, 2 }, { +1, +1 }, { 1, 3 }},
             new int[,]{{ 0, -1 }, { +0, +2 }, { 0, 1 }},
             new int[,]{{ +0, -2 }, { +1, -1 }, { 1, 1 }},
             new int[,]{{ 0, -1 }, { 0, -2 }, { 0, -3 }},
@@ -107,7 +110,7 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
     ////////////////////////////////////////////////////////////////////////////////
     /// : 블록맵 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public bool InitBlockMap(List<SaveBlockData> pEBlockDatas)
+    public bool InitBlockMap(List<BlockData> pEBlockDatas)
     {
         //보드 데이터를 받아온다.
         float blockWidth = 0;
@@ -429,7 +432,22 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
                 }
                 else
                 {
-                    boardManager.boardLock = false;
+                    //최종적으로 보드를 다 훑어보면서
+                    //매치가 안된부분이 있는지확인해본다.
+                    bool finalMatchBlock = MatchChecks();
+
+                    if(finalMatchBlock)
+                    {
+                        //블록이 파괴됬다 대기한다.
+                        yield return MatchBlockEvent();
+                        yield return new WaitForSeconds(matchDelay);
+
+                        StartCoroutine(BlockMoveEvent());
+                    }
+                    else
+                    {
+                        boardManager.boardLock = false;
+                    }
                 }
             }
         }
@@ -467,6 +485,8 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
         {
             for (int x = 0; x <= mapWidth; x++)
             {
+                //보드를 훑어보면서 떨어지는게 가능한 블록을
+                //찾아본다.
                 BlockObj block = blockArray[x, y];
                 if (block == null)
                     continue;
@@ -533,10 +553,34 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
             matchPos = new List<Vector2Int>();
         }
 
+        public bool IsValidMatch()
+        {
+            //해당 매치가 유효한지 검사
+            BlockGroup blockGroup = instance;
+
+            BlockType checkType = BlockType.none;
+            foreach (Vector2Int pos in matchPos)
+            {
+                BlockObj block = blockGroup.GetBlock(pos.x, pos.y);
+
+                if (checkType == BlockType.none)
+                {
+                    checkType = block.blockType;
+                }
+                else if(checkType != block.blockType)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public static int Compare(MatchEvent eventA, MatchEvent eventB)
         {
             if (eventA.matchType == MatchType.match5 && eventA.matchType == eventB.matchType)
             {
+                //5개 연속 매치일경우는
+                //매치숫자가 높은게 우선순위가 높다.
                 int eventACnt = -eventA.matchPos.Count;
                 int eventBCnt = -eventB.matchPos.Count;
                 return eventACnt.CompareTo(eventBCnt);
@@ -544,11 +588,68 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
             else
                 return eventA.matchType.CompareTo(eventB.matchType);
         }
+
+    }
+
+    public BlockDic GetBlockDic(Vector2Int pStart, List<Vector2Int> pPos)
+    {
+        //해당 매치의 방향을 계산한다.
+        for (int idx = 0; idx < 3; idx++)
+        {
+            for (int dic = 0; dic < 2; dic++)
+            {
+                int nowX = pStart.x;
+                int nowY = pStart.y;
+                bool isDic = true;
+                foreach(Vector2Int v in pPos)
+                {
+                    if(v.x != nowX || v.y != nowY)
+                    {
+                        isDic = false;
+                        break;
+                    }
+                    int by = nowY % 2;
+                    nowX += matchDic[idx][by][dic, 0];
+                    nowY += matchDic[idx][by][dic, 1];
+                }
+
+                if(isDic)
+                {
+                    return (BlockDic)idx;
+                }
+            }
+        }
+
+        return BlockDic.up;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
     /// : 매치가 일어나지 판정한다.
     ////////////////////////////////////////////////////////////////////////////////
+    private bool MatchChecks()
+    {
+        bool result = false;
+        int mapWidth = 0;
+        int mapHeight = 0;
+        BoardManager boardManager = BoardManager.instance;
+        if (boardManager != null)
+        {
+            mapWidth = boardManager.mapWidth;
+            mapHeight = boardManager.mapHeight;
+        }
+
+        for (int y = 0; y <= mapHeight; y++)
+        {
+            for (int x = 0; x <= mapWidth; x++)
+            {
+                //보드에 있는 모든 블록에 매치가 발생했는지
+                //검사하는 코드를 실행시켜본다.
+                result |= MatchCheck(x, y);
+            }
+        }
+        return result;
+    }
+
     private bool MatchCheck()
     {
         if (matchEventQueue.Count > 0)
@@ -725,6 +826,15 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
     ////////////////////////////////////////////////////////////////////////////////
     public IEnumerator MatchBlockEvent()
     {
+        BoardManager boardManager = BoardManager.instance;
+        float matchDelay = 0;
+        float makeBlockDelay = 0;
+        if(boardManager != null)
+        {
+            matchDelay = boardManager.matchDelay;
+            makeBlockDelay = boardManager.makeBlockDelay;
+        }
+
         HashSet<Vector2Int> nearBlocks = new HashSet<Vector2Int>();
         Dictionary<Vector2Int, MatchType> matchMap = new Dictionary<Vector2Int, MatchType>();
 
@@ -735,7 +845,11 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
             List<MatchEvent> mEvents = matchEventQueue.Dequeue();
             foreach(MatchEvent match in mEvents)
             {
-                tempEvents.Add(match);
+                if(match.IsValidMatch())
+                {
+                    //유효한 매치이다.
+                    tempEvents.Add(match);
+                }
             }
         }
         tempEvents.Sort(MatchEvent.Compare);
@@ -783,12 +897,12 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
             }
         }
 
-        Dictionary<Vector2Int,MakeBlockData> makeBlockDatas = 
-            new Dictionary<Vector2Int, MakeBlockData>();
-
+        Dictionary<Vector2Int, BlockData> makeBlockDatas = 
+            new Dictionary<Vector2Int, BlockData>();
         foreach (MatchEvent matchEvent in matchEvents)
         {
-            //특수 블록을 생성할 부분을 기록해둔다.
+            //블록이 매치된 부분에서 특수블록이 생성된다.
+            //해당 위치를 기록해둔다.
             Vector2Int firePos = matchEvent.firePos;
             BlockObj fireBlock = GetBlock(firePos.x, firePos.y);
             if (fireBlock == null)
@@ -805,62 +919,106 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
 
             BlockType blockType = fireBlock.blockType;
             MatchType matchType = matchEvent.matchType;
+            BlockDic blockDic = GetBlockDic(matchEvent.firePos, matchEvent.matchPos);
             switch(matchType)
             {
                 //매치 종류에 따라 생성되는 특수블록이 다르다.
                 case MatchType.match4:
                 case MatchType.match5:
                     makeBlockDatas[firePos] = 
-                        new MakeBlockData(blockType, SpecialType.rocket, BlockDic.up);
+                        new BlockData(firePos, blockType, SpecialType.rocket, blockDic);
                     break;
             }
         }
 
+        List<BlockData> specialBlock = new List<BlockData>();
         foreach (MatchEvent matchEvent in matchEvents)
         {
             foreach (Vector2Int pos in matchEvent.matchPos)
             {
+                //파괴할 블록은 파괴 목록에 넣어준다.
+                //특수블록은 파괴될때 효과가 있으므로 따로 빼놓아서
+                //나중에 처리하도록한다.
                 BlockObj block = GetBlock(pos.x, pos.y);
                 if (block == null)
-                    continue;
-
-                bool destroy = block.DestroyBlock();
-                if (destroy == false)
-                    continue;
-
-                block.DisableBlock();
-
-                blockQueue.Enqueue(block);
-                blockArray[pos.x, pos.y] = null;
-
-                List<Vector2Int> aroundPos =
-                    MyLib.Calculator.GetAroundHexagonPos(pos.x, pos.y);
-
-                foreach (Vector2Int aPos in aroundPos)
                 {
-                    nearBlocks.Add(aPos);
+                    //블록이없다.
+                    continue;
                 }
+
+                TileGroup.instance.RunTileEffect(pos.x, pos.y);
+
+                if (destroyBlock.Contains(pos))
+                {
+                    //이미 파괴될 예정이다.
+                    continue;
+                }
+
+                //파괴목록에 추가한다.
+                destroyBlock.Add(pos);
+
+                BlockType blockType = block.blockType;
+                SpecialType specialType = block.specialType;
+                BlockDic blockDic = block.blockDic;
+
+                if (specialType == SpecialType.normal)
+                {
+                    //특수블록이 아니다.
+                    continue;
+                }
+
+                //특수블록들은 따로 모아둔다.
+                BlockData blockData = new BlockData(pos, blockType, specialType, blockDic);
+                specialBlock.Add(blockData);
             }
         }
 
-        foreach (KeyValuePair<Vector2Int, MakeBlockData> makeBlockDataPair in makeBlockDatas)
+        if(matchEvents.Count > 0)
         {
-            Vector2Int pos = makeBlockDataPair.Key;
-            MakeBlockData makeBlockData = makeBlockDataPair.Value;
-
-            BlockType blockType = makeBlockData.blockType;
-            SpecialType specialType = makeBlockData.specialType;
-            BlockDic blockDic = makeBlockData.blockDic;
-
-            BlockObj blockObj = MakeBlockObj(pos);
-            blockObj.InitBlock(blockType, specialType, blockDic);
-            blockArray[pos.x, pos.y] = blockObj;
+            //블록이 매치된적이 있다. 대기한다.
+            yield return new WaitForSeconds(matchDelay);
         }
 
+        //특수블록들을 처리한다.
+        yield return RunSpecialBlock(specialBlock);
 
-        //주변에서 매치될때 터지는 블록처리
+        //타일 이펙트를 꺼준다.
+        TileGroup tileGroup = TileGroup.instance;
+        tileGroup.OffTileEffects();
+
+        foreach (Vector2Int pos in destroyBlock)
+        {
+            //파괴될 블록 목록에 있는 모든 블록을 제거하는 연산을 취한다.
+            BlockObj block = GetBlock(pos.x, pos.y);
+            if (block == null)
+                continue;
+
+            bool destroy = block.DestroyBlock();
+            if (destroy == false)
+                continue;
+
+            //파괴됬으므로 비활성화한다.
+            block.DisableBlock();
+
+            blockQueue.Enqueue(block);
+            blockArray[pos.x, pos.y] = null;
+
+            //주변 블록들의 위치를 계산한다.
+            //파괴가 일어난 주변의 위치에서 발생하는 이벤트도
+            //존재하므로 모아둔다.
+            List<Vector2Int> aroundPos = 
+                MyLib.Calculator.GetAroundHexagonPos(pos.x, pos.y);
+
+            foreach (Vector2Int aPos in aroundPos)
+            {
+                nearBlocks.Add(aPos);
+            }
+        }
+        destroyBlock.Clear(); //목록에 있는 블록을 파괴했으므로 목록을 비워둔다.
+
         foreach (Vector2Int pos in nearBlocks)
         {
+            //주변에서 매치될때 터지는 블록처리
             BlockObj block = GetBlock(pos.x, pos.y);
             if (block == null)
                 continue;
@@ -879,28 +1037,159 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
             blockArray[pos.x, pos.y] = null;
         }
 
+        //블로의 모든 파괴 처리가 끝났으니
+        //다시 블록을 생성해준다.
+        bool matchBlock = false; //생성중에서도 매치가 발생할수있으니 검사해준다.
+        foreach (KeyValuePair<Vector2Int, BlockData> makeBlockDataPair in makeBlockDatas)
+        {
+            //지정한 위치에 블록을 생성해준다.
+            Vector2Int pos = makeBlockDataPair.Key;
+            BlockData makeBlockData = makeBlockDataPair.Value;
 
-        yield break;
+            BlockType blockType = makeBlockData.blockType;
+            SpecialType specialType = makeBlockData.specialType;
+            BlockDic blockDic = makeBlockData.blockDic;
+
+            BlockObj blockObj = MakeBlockObj(pos);
+            blockObj.InitBlock(blockType, specialType, blockDic);
+            blockArray[pos.x, pos.y] = blockObj;
+
+            //새로 생긴블록때문에
+            //매치가 성사되는지 파악하자.
+            matchBlock |= MatchCheck(pos.x, pos.y);
+        }
+
+        if (makeBlockDatas.Count > 0)
+        {
+            //블록이 생성될때의 시간만큼 대기한다.
+            yield return new WaitForSeconds(makeBlockDelay);
+        }
+
+        if (matchBlock)
+        {
+            //블록의 매치가 발생했다. 처리해준다.
+            yield return MatchBlockEvent();
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 특수한 블록이 터졌을때 일어나는 연계처리를 합니다.
+    ////////////////////////////////////////////////////////////////////////////////
+    private IEnumerator RunSpecialBlock(List<BlockData> pBlockDatas)
+    {
+        int mapHeight = 0;
+        float matchDelay = 0;
+        BoardManager boardManager = BoardManager.instance;
+        if (boardManager != null)
+        {
+            mapHeight = boardManager.mapHeight;
+            matchDelay = boardManager.matchDelay;
+        }
+        TileGroup tileGroup = TileGroup.instance;
+
+        //새로 처리해야하는 특수블록들을 모은다.
+        List<BlockData> specialBlock = new List<BlockData>();
+
+        //시간대별 타일이펙트가 언제켜지는 계산한다. (시간,x,y)
+        List<Vector3Int> tileEffectPos = new List<Vector3Int>();
+
+        foreach (BlockData blockData in pBlockDatas)
+        {
+            SpecialType specialType = blockData.specialType;
+            BlockDic blockDic = blockData.blockDic;
+            Vector2Int startPos = blockData.pos;
+
+            //이벤트의 시작지점에는 이펙트가 켜져야한다.
+            tileEffectPos.Add(new Vector3Int(0, startPos.x, startPos.y));
+
+            switch (specialType)
+            {
+                case SpecialType.rocket:
+                    {
+                        for (int checkDic = 0; checkDic < 2; checkDic++)
+                        {
+                            int newX = startPos.x;
+                            int newY = startPos.y;
+
+                            int time = 1;
+                            for (int cnt = 1; cnt <= (mapHeight + 1); cnt++)
+                            {
+                                int by = newY % 2;
+                                by = Mathf.Abs(by);
+
+                                int dic = (int)blockDic;
+                                newX += matchDic[dic][by][checkDic, 0];
+                                newY += matchDic[dic][by][checkDic, 1];
+
+                                Vector2Int newPos = new Vector2Int(newX, newY);
+                                BlockObj block = GetBlock(newX, newY);
+                                if (block == null)
+                                {
+                                    //블록이없다.
+                                    continue;
+                                }
+
+                                //이펙트를 등록해준다.
+                                tileEffectPos.Add(new Vector3Int(time++, newPos.x, newPos.y));
+
+                                if (destroyBlock.Contains(newPos))
+                                {
+                                    //이미 파괴될 예정이다.
+                                    continue;
+                                }
+
+                                //파괴목록에 추가한다.
+                                destroyBlock.Add(newPos);
+
+                                BlockType newblockType = block.blockType;
+                                SpecialType newspecialType = block.specialType;
+                                BlockDic newblockDic = block.blockDic;
+
+                                if (specialType == SpecialType.normal)
+                                {
+                                    //특수블록이 아니다.
+                                    continue;
+                                }
+
+                                //특수블록들은 따로 모아둔다.
+                                BlockData nblockData = 
+                                    new BlockData(newPos, newblockType, newspecialType, newblockDic);
+                                specialBlock.Add(nblockData);
+                            }
+                        }
+                    }
+                break;
+            }
+        }
+
+        //타일의 이펙트를 시간순서대로 정렬한다.
+        tileEffectPos = tileEffectPos.OrderBy(a => a.x).ToList();
+
+        int timeFlag = -1;
+        foreach (Vector3Int tilePos in tileEffectPos)
+        {
+            int tileTime = tilePos.x;
+            if (timeFlag != tileTime)
+            {
+                //시간마다 조금의 딜레이를 준다.
+                yield return new WaitForSeconds(0.1f);
+                timeFlag = tileTime;
+            }
+            tileGroup.RunTileEffect(tilePos.y, tilePos.z);
+        }
+
+        if (specialBlock.Count > 0)
+        {
+            //특수블록이 터지는 과정속에서 다른 특수블록이 터졌다.
+            //재귀로 탐색한다.
+            yield return new WaitForSeconds(matchDelay);
+            yield return RunSpecialBlock(specialBlock);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////
     /// : 새로운 블록을 생성한다.
     ////////////////////////////////////////////////////////////////////////////////
-    
-    private struct MakeBlockData
-    {
-        public BlockType blockType;
-        public SpecialType specialType;
-        public BlockDic blockDic;
-        public MakeBlockData(BlockType pBlockType, SpecialType pSpecialType,
-            BlockDic pBlockDic)
-        {
-            blockType = pBlockType;
-            specialType = pSpecialType;
-            blockDic = pBlockDic;
-        }
-    }
-
     private BlockObj MakeBlockObj()
     {
         if (blockQueue.Count == 0)

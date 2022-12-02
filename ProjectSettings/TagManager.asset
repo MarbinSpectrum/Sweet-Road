@@ -47,3 +47,6 @@ TagManager:
   - name: Block
     uniqueID: 3221941361
     locked: 0
+  - name: TileEffect
+    uniqueID: 4106225865
+    locked: 0

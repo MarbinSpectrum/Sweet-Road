@@ -10,6 +10,7 @@ public class TileObj : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer tileRenderer;
     [SerializeField] private Animation tileAnimation;
+    [SerializeField] private GameObject tileEffect;
 
     ////////////////////////////////////////////////////////////////////////////////
     /// : 타일 초기화
@@ -21,6 +22,8 @@ public class TileObj : MonoBehaviour
             //타일 활성화
             tileRenderer.gameObject.SetActive(true);
         }
+
+        ActTileEffect(false);
 
         tileAnimation.Play();
 
@@ -37,6 +40,14 @@ public class TileObj : MonoBehaviour
         {
             //타일 비활성화
             tileRenderer.gameObject.SetActive(false);
+        }
+    }
+
+    public void ActTileEffect(bool pState)
+    {
+        if (tileEffect != null)
+        {
+            tileEffect.SetActive(pState);
         }
     }
 }

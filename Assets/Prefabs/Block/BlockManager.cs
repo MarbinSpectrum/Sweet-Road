@@ -49,7 +49,7 @@ public class BlockManager : FieldObjectSingleton<BlockManager>
     public static BlockType GetRandomColorBlock()
     {
         BlockType blockType = 
-            (BlockType)Random.Range((int)BlockType.red, (int)BlockType.green + 1);
+            (BlockType)Random.Range((int)BlockType.red, (int)BlockType.purple + 1);
         return blockType;       
     }
 
