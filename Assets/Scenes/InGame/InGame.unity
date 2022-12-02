@@ -13133,7 +13133,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  stageData: {fileID: 4900000, guid: 48ce38b939ccd5b4699c4e7cb95cbe5e, type: 3}
+  stageData: {fileID: 4900000, guid: 10842c618bfc17144bc0688470d6db43, type: 3}
   centerPos: {x: -2.22, y: -3.87}
   blockWidth: 1.47
   blockHeight: 0.85

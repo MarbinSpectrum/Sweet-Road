@@ -3,31 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+////////////////////////////////////////////////////////////////////////////////
+/// : 인게임 UI를 관리하는 곳입니다.
+////////////////////////////////////////////////////////////////////////////////
 public class InGameUI : FieldObjectSingleton<InGameUI>
 {
+    //목표 블록을 표시해주는 UI 오브젝트
     [SerializeField] private Transform tObjContext;
     [SerializeField] private TargetObj tObjPrefab;
     private Dictionary<BlockType, TargetObj> targetList = new Dictionary<BlockType, TargetObj>();
 
+    //이동가능 횟수를 표시해주는 UI 오브젝트
     [SerializeField] private MoveCnt moveCnt;
 
-    public void InitGameUI(int pMoveCnt, List<LevelEditor.SaveTargetData> pETargetDatas)
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 인게임 UI를 초기화한다.
+    ////////////////////////////////////////////////////////////////////////////////
+    public void InitGameUI(int pMoveCnt, List<SaveTargetData> pETargetDatas)
     {
-        foreach(LevelEditor.SaveTargetData saveTargetData in pETargetDatas)
+        //목표블록을 표시해준다.
+        foreach(SaveTargetData saveTargetData in pETargetDatas)
         {
             TargetObj newTarget = null;
 
-            LevelEditor.BlockType eblockType = saveTargetData.blockType;
-            string str = eblockType.ToString();
-            BlockType blockType;
-            if (Enum.TryParse(str, out blockType))
-            {
-                //파싱 성공
-                if (targetList.ContainsKey(blockType))
-                {
-                    newTarget = targetList[blockType];
-                }
-            }
+            BlockType blockType = saveTargetData.blockType;
+            SpecialType specialType = saveTargetData.specialType;
 
             if (newTarget == null)
             {
@@ -41,12 +41,16 @@ public class InGameUI : FieldObjectSingleton<InGameUI>
 
             int cnt = saveTargetData.targetNum;
 
-            newTarget.InitObj(blockType, cnt);
+            newTarget.InitObj(blockType, specialType, cnt);
         }
 
+        //이동가능횟수를 표시해준다.
         moveCnt.InitObj(pMoveCnt);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 블록이 파괴된것을 처리한다.
+    ////////////////////////////////////////////////////////////////////////////////
     public void DestroyBlock(BlockType pBlockType)
     {
         if(targetList.ContainsKey(pBlockType))
@@ -56,11 +60,27 @@ public class InGameUI : FieldObjectSingleton<InGameUI>
         }
     }
 
-    public void UseMoveCnt()
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 이동횟수 사용
+    ////////////////////////////////////////////////////////////////////////////////
+    public bool UseMoveCnt()
     {
         if (moveCnt != null)
         {
-            moveCnt.UseMoveCnt();
+            return moveCnt.UseMoveCnt();
         }
+        return false;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 이동횟수가 남아있다.
+    ////////////////////////////////////////////////////////////////////////////////
+    public bool HasMoveCnt()
+    {
+        if (moveCnt != null)
+        {
+            return moveCnt.HasMoveCnt();
+        }
+        return false;
     }
 }

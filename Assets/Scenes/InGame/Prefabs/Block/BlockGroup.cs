@@ -19,7 +19,7 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
     private BlockObj[,] blockArray;
 
     //블록이 낙하방향
-    #region[dropDic]
+    #region[private int[][,] dropDic]
     private int[][,] dropDic = new int[][,]
     {
         new int [,]{{ 0, -2 },{ 1, -1 },{ +0, -1 },},
@@ -28,7 +28,7 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
     #endregion
 
     //4개의 블록이 모였을때의 블록위치
-    #region[gatherPos]
+    #region[private int[][][,] gatherPos]
     private int[][][,] gatherPos = new int[][][,]
     {
         new int[][,]{
@@ -47,7 +47,7 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
     ////////////////////////////////////////////////////////////////////////////////
     /// : 블록맵 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public bool InitBlockMap(List<LevelEditor.SaveBlockData> pEBlockDatas)
+    public bool InitBlockMap(List<SaveBlockData> pEBlockDatas)
     {
         //보드 데이터를 받아온다.
         float blockWidth = 0;
@@ -75,11 +75,14 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
                 break;
             }
 
-            LevelEditor.BlockType blockType = pEBlockDatas[idx].blockType;
+            BlockType blockType = pEBlockDatas[idx].blockType;
+            SpecialType specialType = pEBlockDatas[idx].specialType;
+            BlockDic blockDic = pEBlockDatas[idx].blockDic;
+
             int blockX = pEBlockDatas[idx].pos.x;
             int blockY = pEBlockDatas[idx].pos.y;
 
-            if(blockType == LevelEditor.BlockType.none)
+            if(blockType == BlockType.none)
             {
                 //none은 빈공간을 의미한다.
                 //블록을 생성하지 않는다.
@@ -87,7 +90,7 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
                 continue;
             }
 
-            if (blockType == LevelEditor.BlockType.spawn)
+            if (blockType == BlockType.spawn)
             {
                 //spawn은 블록이 새로 생성되는 위치이다.
                 //블록을 생성하지 않는다.
@@ -107,7 +110,7 @@ public class BlockGroup : FieldObjectSingleton<BlockGroup>
             blockTrans.position = tilePos;
 
             //블록 초기화
-            blocks[idx].InitBlock(blockType);
+            blocks[idx].InitBlock(blockType, specialType, blockDic);
 
             //해당 위치에 블록을 등록
             blockArray[blockX, blockY] = blocks[idx];

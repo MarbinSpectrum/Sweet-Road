@@ -36,12 +36,12 @@ public class CreateGameBoard : FieldObjectSingleton<CreateGameBoard>
             return;
         }
 
-        LevelEditor.LevelData levelData
-            = MyLib.Json.JsonToOject<LevelEditor.LevelData>(stageData.text);
+        LevelData levelData
+            = MyLib.Json.JsonToOject<LevelData>(stageData.text);
 
 
-        List<LevelEditor.SaveBlockData> eBlockDatas = levelData.blockDatas;
-        List<LevelEditor.SaveTargetData> eTargetDatas = levelData.targetDatas;
+        List<SaveBlockData> eBlockDatas = levelData.blockDatas;
+        List<SaveTargetData> eTargetDatas = levelData.targetDatas;
         int eMoveCnt = levelData.moveCnt;
 
         //보드초기화

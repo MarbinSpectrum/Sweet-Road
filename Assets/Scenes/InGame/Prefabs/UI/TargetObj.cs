@@ -12,22 +12,25 @@ using Sirenix.OdinInspector;
 public class TargetObj : SerializedMonoBehaviour
 {
     private BlockType targetBlock;
+    private SpecialType specialType;
     private int targetCnt;
 
     //UI오브젝트
     [SerializeField] private Image targetImg;
     [SerializeField] private TextMeshProUGUI targetNum;
 
-    //블록별 이미지
-    [SerializeField] private Dictionary<BlockType, Sprite> blockSprite
-        = new Dictionary<BlockType, Sprite>();
+    //블록매니저
+    [SerializeField] private BlockManager blockManager;
 
     ////////////////////////////////////////////////////////////////////////////////
     /// : 해당 오브젝트 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public void InitObj(BlockType pBlockType,int pNum)
+    public void InitObj(BlockType pBlockType, SpecialType pSpecialType, int pNum)
     {
-        Sprite sprite = blockSprite[pBlockType];
+        targetBlock = pBlockType;
+        specialType = pSpecialType;
+
+        Sprite sprite = blockManager.GetSprite(targetBlock, specialType);
         if (targetImg == null)
             return;
         targetImg.sprite = sprite;

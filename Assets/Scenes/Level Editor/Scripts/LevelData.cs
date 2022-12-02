@@ -2,63 +2,74 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LevelEditor
+
+////////////////////////////////////////////////////////////////////////////////
+/// : 저장할 블록 데이터
+////////////////////////////////////////////////////////////////////////////////
+[System.Serializable]
+public struct SaveBlockData
 {
-    ////////////////////////////////////////////////////////////////////////////////
-    /// : 저장할 블록 데이터
-    ////////////////////////////////////////////////////////////////////////////////
-    [System.Serializable]
-    public struct SaveBlockData
+    public Vector2Int pos;
+    public BlockType blockType;
+    public SpecialType specialType;
+    public BlockDic blockDic;
+
+    public SaveBlockData(Vector2Int pPos, BlockType pBlockType,
+        SpecialType pSpecialType,BlockDic pBlockDic)
     {
-        public Vector2Int pos;
-        public BlockType blockType;
-        public SaveBlockData(Vector2Int pPos, BlockType pBlockType)
-        {
-            pos = pPos;
-            blockType = pBlockType;
-        }
+        pos = pPos;
+        blockType = pBlockType;
+        specialType = pSpecialType;
+        blockDic = pBlockDic;
     }
+}
 
-    [System.Serializable]
-    public struct SaveTargetData
+[System.Serializable]
+public struct SaveTargetData
+{
+    public int targetNum;
+    public BlockType blockType;
+    public SpecialType specialType;
+
+    public SaveTargetData(BlockType pBlockType, SpecialType pSpecialType, int ptargetNum)
     {
-        public int targetNum;
-        public BlockType blockType;
-        public SaveTargetData(BlockType pBlockType, int ptargetNum)
-        {
-            blockType = pBlockType;
-            targetNum = ptargetNum;
-        }
+        blockType = pBlockType;
+        specialType = pSpecialType;
+        targetNum = ptargetNum;
     }
+}
 
-    [System.Serializable]
-    public class LevelData
+[System.Serializable]
+public class LevelData
+{
+    public int moveCnt;
+
+    public List<SaveBlockData> blockDatas;
+    public List<SaveTargetData> targetDatas;
+
+    public LevelData(List<EditorBlock> pBlocks, HashSet<SaveTargetData> pTargetBlocks, int pMoveCnt)
     {
-        public int moveCnt;
-
-        public List<SaveBlockData> blockDatas;
-        public List<SaveTargetData> targetDatas;
-
-        public LevelData(List<EditorBlock> pBlocks,
-            Dictionary<BlockType, int> pTargetBlocks, int pMoveCnt)
+        blockDatas = new List<SaveBlockData>();
+        foreach (EditorBlock editorBlock in pBlocks)
         {
-            blockDatas = new List<SaveBlockData>();
-            foreach (EditorBlock editorBlock in pBlocks)
-            {
-                blockDatas.Add(new SaveBlockData(
-                    new Vector2Int(editorBlock.posX, editorBlock.posY),
-                    editorBlock.blockType));
-            }
+            Vector2Int pos = new Vector2Int(editorBlock.posX, editorBlock.posY);
+            BlockType blockType = editorBlock.blockType;
+            SpecialType specialType = editorBlock.specialType;
+            BlockDic blockDic = editorBlock.blockDic;
 
-            targetDatas = new List<SaveTargetData>();
-            foreach (KeyValuePair<BlockType, int> pTargetBlockPair in pTargetBlocks)
-            {
-                BlockType blockType = pTargetBlockPair.Key;
-                int cnt = pTargetBlockPair.Value;
-                targetDatas.Add(new SaveTargetData(blockType, cnt));
-            }
-
-            moveCnt = pMoveCnt;
+            blockDatas.Add(new SaveBlockData(pos, blockType, specialType, blockDic));
         }
+
+        targetDatas = new List<SaveTargetData>();
+        foreach (SaveTargetData saveTargetData in pTargetBlocks)
+        {
+            BlockType blockType = saveTargetData.blockType;
+            SpecialType specialType = saveTargetData.specialType;
+            int cnt = saveTargetData.targetNum;
+
+            targetDatas.Add(new SaveTargetData(blockType,specialType, cnt));
+        }
+
+        moveCnt = pMoveCnt;
     }
 }

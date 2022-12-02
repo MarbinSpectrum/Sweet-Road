@@ -19260,7 +19260,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 8
+      Data: 9
     - Name: 
       Entry: 7
       Data: 
@@ -19275,10 +19275,10 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 1
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 1
     - Name: 
       Entry: 4
       Data: 1
@@ -19302,10 +19302,10 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 4
-      Data: 0.617374659
+      Data: 1
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 1
     - Name: 
       Entry: 4
       Data: 1
@@ -19320,7 +19320,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 3
-      Data: 2
+      Data: 5
     - Name: $v
       Entry: 7
       Data: UnityEngine.Color, UnityEngine.CoreModule
@@ -19353,13 +19353,13 @@ MonoBehaviour:
       Data: UnityEngine.Color, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
       Data: 1
     - Name: 
       Entry: 4
-      Data: 0.127565861
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 4
       Data: 1
@@ -19380,13 +19380,13 @@ MonoBehaviour:
       Data: UnityEngine.Color, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0.09776497
-    - Name: 
-      Entry: 4
       Data: 1
+    - Name: 
+      Entry: 4
+      Data: 0.617374659
+    - Name: 
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 4
       Data: 1
@@ -19401,7 +19401,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 3
-      Data: 5
+      Data: 8
     - Name: $v
       Entry: 7
       Data: UnityEngine.Color, UnityEngine.CoreModule
@@ -19434,10 +19434,37 @@ MonoBehaviour:
       Data: UnityEngine.Color, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 1
+      Data: 0
     - Name: 
       Entry: 4
       Data: 1
+    - Name: 
+      Entry: 4
+      Data: 0.127565861
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 7
+    - Name: $v
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0.09776497
     - Name: 
       Entry: 4
       Data: 1
@@ -19455,7 +19482,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 3
-      Data: 7
+      Data: 9
     - Name: $v
       Entry: 7
       Data: UnityEngine.Color, UnityEngine.CoreModule
@@ -19483,7 +19510,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  effectType: 0
   particles:
   - {fileID: 3060933696614936183}
   - {fileID: 3060933697590323645}

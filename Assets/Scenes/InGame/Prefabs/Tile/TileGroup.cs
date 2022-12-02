@@ -13,7 +13,7 @@ public class TileGroup : FieldObjectSingleton<TileGroup>
     ////////////////////////////////////////////////////////////////////////////////
     /// : 타일맵 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public bool InitTileMap(List<LevelEditor.SaveBlockData> pEBlockDatas)
+    public bool InitTileMap(List<SaveBlockData> pEBlockDatas)
     {
         //보드 데이터를 받아온다.
         float blockWidth = 0;
@@ -47,8 +47,8 @@ public class TileGroup : FieldObjectSingleton<TileGroup>
                 break;
             }
 
-            LevelEditor.BlockType blockType = pEBlockDatas[idx].blockType;
-            if(blockType == LevelEditor.BlockType.none)
+            BlockType blockType = pEBlockDatas[idx].blockType;
+            if(blockType == BlockType.none)
             {
                 //none은 빈공간을 의미한다.
                 //타일을 생성하지 않는다.
@@ -56,7 +56,7 @@ public class TileGroup : FieldObjectSingleton<TileGroup>
                 continue;
             }
 
-            if (blockType == LevelEditor.BlockType.spawn)
+            if (blockType == BlockType.spawn)
             {
                 //spawn은 블록을 생성하는 부분이다.
                 //타일을 생성하지 않는다.

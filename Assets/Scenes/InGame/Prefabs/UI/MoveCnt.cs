@@ -27,9 +27,23 @@ public class MoveCnt : MonoBehaviour
     ////////////////////////////////////////////////////////////////////////////////
     /// : 이동횟수 사용
     ////////////////////////////////////////////////////////////////////////////////
-    public void UseMoveCnt()
+    public bool UseMoveCnt()
     {
-        moveCnt--;
-        moveNum.text = moveCnt.ToString();
+        if(HasMoveCnt())
+        {
+            moveCnt--;
+            moveNum.text = moveCnt.ToString();
+            return true;
+        }
+        return false;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 이동횟수가 남아있다.
+    ////////////////////////////////////////////////////////////////////////////////
+    public bool HasMoveCnt()
+    {
+        bool canMove = (moveCnt > 0);
+        return canMove;
     }
 }

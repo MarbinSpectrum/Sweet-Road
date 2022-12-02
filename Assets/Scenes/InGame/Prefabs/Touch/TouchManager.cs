@@ -14,7 +14,7 @@ public class TouchManager : FieldObjectSingleton<TouchManager>
     ////////////////////////////////////////////////////////////////////////////////
     /// : 터치맵 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public bool InitTouchMap(List<LevelEditor.SaveBlockData> pEBlockDatas)
+    public bool InitTouchMap(List<SaveBlockData> pEBlockDatas)
     {
         //보드 데이터를 받아온다.
         float blockWidth = 0;
@@ -43,8 +43,8 @@ public class TouchManager : FieldObjectSingleton<TouchManager>
 
             //none은 빈공간을 의미한다.
             //타일을 생성하지 않는다.
-            LevelEditor.BlockType blockType = pEBlockDatas[idx].blockType;
-            if (blockType == LevelEditor.BlockType.none)
+            BlockType blockType = pEBlockDatas[idx].blockType;
+            if (blockType == BlockType.none)
             {
                 touchs[idx].gameObject.SetActive(false);
                 continue;

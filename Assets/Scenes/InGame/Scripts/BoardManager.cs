@@ -12,7 +12,7 @@ public class BoardManager : FieldObjectSingleton<BoardManager>
     public bool boardLock;
 
     //블록이 한칸을 이동하는데 걸리는 시간
-    #region[moveTime]
+    #region[public float moveTime]
     [SerializeField] [MinValue(0)] private float MoveTime;
     public float moveTime
     {
@@ -21,7 +21,7 @@ public class BoardManager : FieldObjectSingleton<BoardManager>
     #endregion
 
     //블록이 터지기전 딜레이
-    #region[matchDelay]
+    #region[public float matchDelay]
     [SerializeField] [MinValue(0)] private float MatchDelay;
     public float matchDelay
     {
@@ -30,31 +30,28 @@ public class BoardManager : FieldObjectSingleton<BoardManager>
     #endregion
 
     //블록의 크기 및 맵의 크기
-    #region[blockWidth]
+    #region[public float blockWidth]
     private float BlockWidth;
     public float blockWidth
     {
         get { return BlockWidth; }
     }
     #endregion
-
-    #region[blockWidth]
+    #region[public float blockHeight]
     private float BlockHeight;
     public float blockHeight
     {
         get { return BlockHeight; }
     }
     #endregion
-
-    #region[mapWidth]
+    #region[public int mapWidth]
     private int MapWidth;
     public int mapWidth
     {
         get { return MapWidth; }
     }
     #endregion
-
-    #region[mapHeight]
+    #region[public int mapHeight]
     private int MapHeight;
     public int mapHeight
     {
@@ -62,7 +59,7 @@ public class BoardManager : FieldObjectSingleton<BoardManager>
     }
     #endregion
 
-    #region[centerPos]
+    #region[public Vector2 centerPos]
     private Vector2 CenterPos;
     public Vector2 centerPos
     {
@@ -98,6 +95,20 @@ public class BoardManager : FieldObjectSingleton<BoardManager>
     {
         boardLock = true;
 
+        InGameUI inGameUI = InGameUI.instance;
+        if(inGameUI == null)
+        {
+            boardLock = false;
+            yield break;
+        }
+        bool hasMoveCnt = inGameUI.HasMoveCnt();
+        if(hasMoveCnt == false)
+        {
+            //이동 가능횟수가 부족하다.
+            boardLock = false;
+            yield break;
+        }
+        
         BlockGroup blockGroup = BlockGroup.instance;
         if (blockGroup == null)
         {

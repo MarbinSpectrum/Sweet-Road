@@ -10,47 +10,52 @@ using Sirenix.OdinInspector;
 public class BlockObj : SerializedMonoBehaviour
 {
     public BlockType blockType;
+
+    #region[public SpecialType specialType]
+    private bool showIfColorBlock;
+    [ShowIf("showIfColorBlock")] public SpecialType specialType;
+    #endregion
+
+    #region[public BlockDic blockDic]
+    private bool showIfBlockDic;
+    [ShowIf("showIfBlockDic")] public BlockDic blockDic;
+    #endregion
+
     [SerializeField] private GameObject blockImg;
     [SerializeField] private SpriteRenderer blockRenderer;
     [SerializeField] private Animator blockAnimator;
+    [SerializeField] private BlockManager blockManager;
 
     private int blockHp;
-
-    [SerializeField]
-    private Dictionary<BlockType, Sprite> blockSprite
-        = new Dictionary<BlockType, Sprite>();
 
     ////////////////////////////////////////////////////////////////////////////////
     /// : 블록객체 초기화
     ////////////////////////////////////////////////////////////////////////////////
-    public void InitBlock(bool pAniRun = true)
+    public void InitBlock(bool pCreateAni = true)
     {
         BlockType blockType =
             (BlockType)UnityEngine.Random.Range(
                 (int)BlockType.red, (int)BlockType.purple + 1);
-        InitBlock(blockType, pAniRun);
+        InitBlock(blockType, SpecialType.normal, BlockDic.up, pCreateAni);
     }
 
-    public void InitBlock(LevelEditor.BlockType pEBlockType, bool pAniRun = true)
-    {
-        string str = pEBlockType.ToString();
-        BlockType blockType;
-        if(Enum.TryParse(str,out blockType))
-        {
-            //파싱 성공
-            InitBlock(blockType);
-        }
-    }
-    public void InitBlock(BlockType pBlockType, bool pAniRun = true)
+    public void InitBlock(BlockType pBlockType, SpecialType pSpecialType,
+        BlockDic pBlockDic, bool pCreateAni = true)
     {
         blockType = pBlockType;
+        specialType = pSpecialType;
+        blockDic = pBlockDic;
+
+        showIfColorBlock = BlockManager.IsColorBlock(blockType);
+        showIfBlockDic = BlockManager.IsHasDic(pSpecialType);
+
         if (blockRenderer != null)
         {
             blockImg.SetActive(true);
-            blockRenderer.sprite = blockSprite[blockType];
+            blockRenderer.sprite = blockManager.GetSprite(pBlockType, pSpecialType);
         }
 
-        if (pAniRun == true)
+        if (pCreateAni == true)
         {
             blockAnimator.SetTrigger("CreateBlock");
         }
@@ -58,7 +63,10 @@ public class BlockObj : SerializedMonoBehaviour
         {
             blockAnimator.SetTrigger("Default");
         }
-        blockHp = IsBlockHp();
+
+        BlockManager.BlockRotaion(transform, blockDic);
+
+        blockHp = BlockManager.GetBlockHp(pBlockType);
     }
 
     public void ShakeAni() => StartCoroutine(ShakeAniEvent());
@@ -69,7 +77,6 @@ public class BlockObj : SerializedMonoBehaviour
         yield return MyLib.Action2D.MoveTo(transform, movePos, 0.05f);
         yield return MyLib.Action2D.MoveTo(transform, basePos, 0.03f);
     }
-
 
     public void DisableBlock()
     {
@@ -85,19 +92,7 @@ public class BlockObj : SerializedMonoBehaviour
     ////////////////////////////////////////////////////////////////////////////////
     public bool CanSwap()
     {
-        switch(blockType)
-        {
-            case BlockType.red:
-            case BlockType.orange:
-            case BlockType.yellow:
-            case BlockType.green:
-            case BlockType.blue:
-            case BlockType.purple:
-            case BlockType.spin:
-            case BlockType.rocket:
-                return true;
-        }
-        return false;
+        return BlockManager.CanSwap(blockType);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -105,20 +100,7 @@ public class BlockObj : SerializedMonoBehaviour
     ////////////////////////////////////////////////////////////////////////////////
     public bool IsMatchBlock()
     {
-        switch (blockType)
-        {
-            case BlockType.red:
-            case BlockType.orange:
-            case BlockType.yellow:
-            case BlockType.green:
-            case BlockType.blue:
-            case BlockType.purple:
-            case BlockType.rocket:
-                return true;
-            case BlockType.spin:
-                return false;
-        }
-        return false;
+        return BlockManager.IsMatchBlock(blockType);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -126,41 +108,7 @@ public class BlockObj : SerializedMonoBehaviour
     ////////////////////////////////////////////////////////////////////////////////
     public bool IsNearMatchBlock()
     {
-        switch (blockType)
-        {
-            case BlockType.red:
-            case BlockType.orange:
-            case BlockType.yellow:
-            case BlockType.green:
-            case BlockType.blue:
-            case BlockType.purple:
-            case BlockType.rocket:
-                return false;
-            case BlockType.spin:
-                return true;
-        }
-        return false;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
-    /// : 블록 체력
-    ////////////////////////////////////////////////////////////////////////////////
-    public int IsBlockHp()
-    {
-        switch (blockType)
-        {
-            case BlockType.red:
-            case BlockType.orange:
-            case BlockType.yellow:
-            case BlockType.green:
-            case BlockType.blue:
-            case BlockType.purple:
-            case BlockType.rocket:
-                return 1;
-            case BlockType.spin:
-                return 2;
-        }
-        return 0;
+        return BlockManager.IsNearMatchBlock(blockType);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +136,6 @@ public class BlockObj : SerializedMonoBehaviour
                 case BlockType.green:
                 case BlockType.blue:
                 case BlockType.purple:
-                case BlockType.rocket:
                 case BlockType.spin:
                     effectManager.CrushEffect(blockType, transform.position);
                     break;
@@ -212,7 +159,6 @@ public class BlockObj : SerializedMonoBehaviour
             case BlockType.green:
             case BlockType.blue:
             case BlockType.purple:
-            case BlockType.rocket:
                 break;
             case BlockType.spin:
                 {
@@ -224,16 +170,4 @@ public class BlockObj : SerializedMonoBehaviour
                 break;
         }
     }
-}
-
-public enum BlockType
-{
-    red,
-    orange,
-    yellow,
-    green,
-    blue,
-    purple,
-    spin,
-    rocket
 }
