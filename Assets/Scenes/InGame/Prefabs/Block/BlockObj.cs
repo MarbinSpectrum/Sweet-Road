@@ -33,9 +33,8 @@ public class BlockObj : SerializedMonoBehaviour
     ////////////////////////////////////////////////////////////////////////////////
     public void InitBlock(bool pCreateAni = true)
     {
-        BlockType blockType =
-            (BlockType)UnityEngine.Random.Range(
-                (int)BlockType.red, (int)BlockType.purple + 1);
+        //랜덤하게 컬러블록을 하나 받아온다.
+        BlockType blockType = BlockManager.GetRandomColorBlock();
         InitBlock(blockType, SpecialType.normal, BlockDic.up, pCreateAni);
     }
 
@@ -51,19 +50,23 @@ public class BlockObj : SerializedMonoBehaviour
 
         if (blockRenderer != null)
         {
+            //블록에 해당하는 스프라이트로 만든다.
             blockImg.SetActive(true);
             blockRenderer.sprite = blockManager.GetSprite(pBlockType, pSpecialType);
         }
 
         if (pCreateAni == true)
         {
+            //생성애니메이션 재생
             blockAnimator.SetTrigger("CreateBlock");
         }
         else
         {
+            //애니메이션이 없는 상태
             blockAnimator.SetTrigger("Default");
         }
 
+        //방향값에 따른 블록방향처리
         BlockManager.BlockRotaion(transform, blockDic);
 
         blockHp = BlockManager.GetBlockHp(pBlockType);

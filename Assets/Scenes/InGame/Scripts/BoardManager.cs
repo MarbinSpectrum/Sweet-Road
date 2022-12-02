@@ -78,6 +78,21 @@ public class BoardManager : FieldObjectSingleton<BoardManager>
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+    /// : 게임시작시 떨어지거나 매칭되는 블록들의 처리를한다.
+    ////////////////////////////////////////////////////////////////////////////////
+    public void StartBlockEvent()
+    {
+        boardLock = true;
+        BlockGroup blockGroup = BlockGroup.instance;
+        if (blockGroup == null)
+        {
+            boardLock = false;
+            return;
+        }
+        StartCoroutine(blockGroup.BlockMoveEvent());
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
     /// : 블록을 바꾸는 이벤트를 실행한다.
     ////////////////////////////////////////////////////////////////////////////////
     public void SwapBlock(Vector2Int pPos0, Vector2Int pPos1)

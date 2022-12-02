@@ -39,7 +39,6 @@ public class CreateGameBoard : FieldObjectSingleton<CreateGameBoard>
         LevelData levelData
             = MyLib.Json.JsonToOject<LevelData>(stageData.text);
 
-
         List<SaveBlockData> eBlockDatas = levelData.blockDatas;
         List<SaveTargetData> eTargetDatas = levelData.targetDatas;
         int eMoveCnt = levelData.moveCnt;
@@ -64,5 +63,7 @@ public class CreateGameBoard : FieldObjectSingleton<CreateGameBoard>
         //UI √ ±‚»≠
         InGameUI inGameUI = InGameUI.instance;
         inGameUI.InitGameUI(eMoveCnt, eTargetDatas);
+
+        boardManager.StartBlockEvent();
     }
 }

@@ -8,6 +8,9 @@ public class BlockManager : FieldObjectSingleton<BlockManager>
     [SerializeField] private Dictionary<BlockType, Dictionary<SpecialType, Sprite>> blockSprite
         = new Dictionary<BlockType, Dictionary<SpecialType, Sprite>>();
 
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 블록타입에 종류에 따른 스프라이트 반환
+    ////////////////////////////////////////////////////////////////////////////////
     public Sprite GetSprite(BlockType pBlockType,SpecialType pSpecialType)
     {
         Sprite sprite = null;
@@ -22,6 +25,9 @@ public class BlockManager : FieldObjectSingleton<BlockManager>
         return sprite;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 색상 블록인지 검사
+    ////////////////////////////////////////////////////////////////////////////////
     public static bool IsColorBlock(BlockType pBlockType)
     {
         switch (pBlockType)
@@ -37,6 +43,19 @@ public class BlockManager : FieldObjectSingleton<BlockManager>
         return false;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 색상 블록인지 검사
+    ////////////////////////////////////////////////////////////////////////////////
+    public static BlockType GetRandomColorBlock()
+    {
+        BlockType blockType = 
+            (BlockType)Random.Range((int)BlockType.red, (int)BlockType.green + 1);
+        return blockType;       
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// : 방향을 가진 블록인지 검사
+    ////////////////////////////////////////////////////////////////////////////////
     public static bool IsHasDic(SpecialType pSpecialType)
     {
         switch (pSpecialType)
